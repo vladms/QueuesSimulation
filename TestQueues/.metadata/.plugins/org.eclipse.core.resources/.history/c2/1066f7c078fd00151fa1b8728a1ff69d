@@ -1,0 +1,180 @@
+package testQueues;
+
+import java.util.ArrayList;
+
+import gui.AppInterfaceButtonEvents;
+import model.Task;
+import utils.TaskGenerator;
+import java.lang.Runnable;
+
+public class Simulator implements Runnable, AppInterfaceButtonEvents {
+	private Scheduler scheduler;
+	private static SimulatorFrame frame;
+
+	public static final int MAX_WAITING_TIME = 50;
+
+	private Simulator simulator;
+	private int currentTask = 0;
+	private TaskGenerator taskGenerator;
+
+	private int minArrivingTime;
+	private int maxArrivingTime;
+	private int minServiceTime;
+	private int maxServiceTime;
+	private int nrOfServers;
+	private int nrOfTasks;
+	private int simulationInterval;
+
+	private ArrayList<Task> tasksArray;
+
+	private int passedTime;
+
+	private static Simulator sim;
+	
+	public Simulator() {
+		frame = new SimulatorFrame(this);
+		taskGenerator = new TaskGenerator();
+		
+	}
+
+	public static void main(String[] args) {
+		sim = new Simulator();		
+	}
+
+	//@Override
+	public void run() {
+		int currentTime = 0;
+		System.err.println("*********************************\n");
+		for (currentTime = 0; currentTime < simulationInterval && currentTask < nrOfTasks; ++currentTime) {
+			System.out.println("currentTime: " + currentTime + " currentCustomer: " + currentTask + "\n");
+			//currentTime++;
+//			int processTime = (int) (Math.random() * (maxProcessTime - minProcessTime) + minProcessTime);
+			Task task = tasksArray.get(currentTask);
+			System.out.println(task.toString());
+			scheduler.updateServers(1);
+			System.out.println("Updated servers\n");
+
+			if (task.getArrivalTime() == currentTime){
+				System.out.print("***********\n");
+				if (scheduler.dispatchTaskOnServer(task)){
+					currentTask++;
+				} else {
+					scheduler.updateServers(-1);
+					currentTime--;
+				}
+				
+			}
+		
+			frame.displayData(scheduler.getTasks(0));
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		/*while (true) {
+			scheduler.updateServers(1);
+			System.out.println("******\n");
+			frame.displayData(scheduler.getTasks(0));
+			try {
+				Thread.sleep(1000);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}*/
+	}
+	
+	public static boolean isInteger(String s) {
+		try {
+			Integer.parseInt(s);
+		} catch (NumberFormatException e) {
+			frame.showErrorMessage(s + " is not in good format!");
+			return false;
+		} catch (NullPointerException e) {
+			frame.showErrorMessage(s + " is not in good format!");
+			return false;
+		}
+		return true;
+	}
+
+	public void buttonTouched(String minArrivingTime, String maxArrivingTime, String minServiceTime,
+			String maxServiceTime, String nrOfServers, String nrOfClients, String simulationInterval) {
+		boolean goodInput = true;
+
+		if (goodInput = isInteger(minArrivingTime)) {
+			this.minArrivingTime = Integer.parseInt(minArrivingTime);
+		}
+		if (goodInput && (goodInput = isInteger(maxArrivingTime))) {
+			this.maxArrivingTime = Integer.parseInt(maxArrivingTime);
+		}
+		if (goodInput && (goodInput = isInteger(minServiceTime))) {
+			this.minServiceTime = Integer.parseInt(minServiceTime);
+		}
+		if (goodInput && (goodInput = isInteger(maxServiceTime))) {
+			this.maxServiceTime = Integer.parseInt(maxServiceTime);
+		}
+		if (goodInput && (goodInput = isInteger(nrOfServers))) {
+			this.nrOfServers = Integer.parseInt(nrOfServers);
+		}
+		if (goodInput && (goodInput = isInteger(nrOfClients))) {
+			this.nrOfTasks = Integer.parseInt(nrOfClients);
+		}
+		if (goodInput && (goodInput = isInteger(simulationInterval))) {
+			this.simulationInterval = Integer.parseInt(simulationInterval);
+		}
+
+		if (goodInput && (this.minArrivingTime < 0 || this.maxArrivingTime < 0 || this.minServiceTime < 0
+				|| this.maxServiceTime < 0 || this.nrOfServers < 0 || this.simulationInterval < 0)) {
+			frame.showErrorMessage("Values can not be negative!");
+			goodInput = false;
+		}
+
+		if (goodInput && (this.minArrivingTime > this.maxArrivingTime)) {
+			frame.showErrorMessage("Minimum arriving time should be less than maximum!");
+			goodInput = false;
+		}
+		if (goodInput && (this.minServiceTime > this.maxServiceTime)) {
+			frame.showErrorMessage("Minimum service time should be less than maximum!");
+			goodInput = false;
+		}
+		if (goodInput && (this.nrOfServers == 0)) {
+			frame.showErrorMessage("Number of queues should pe positive!");
+			goodInput = false;
+		}
+		
+
+		if (goodInput && (this.nrOfTasks == 0)) {
+			frame.showErrorMessage("Number of clients should pe positive!");
+			goodInput = false;
+		}
+
+		if (goodInput && (this.simulationInterval == 0)) {
+			frame.showErrorMessage("Simulation interval should pe positive!");
+			goodInput = false;
+		}
+		System.out.println(goodInput);
+		if (goodInput) {
+			getTasks();
+		}
+	}
+	
+	private void getTasks() {
+		scheduler = new Scheduler(nrOfServers);
+		tasksArray = new ArrayList<Task>();
+		tasksArray = taskGenerator.getTasksWithRestrictions(minArrivingTime, maxArrivingTime, minServiceTime,
+				maxServiceTime, simulationInterval, nrOfTasks);
+		
+		for (int index = 0; index < nrOfTasks; index++) {
+			Task task = tasksArray.get(index);
+			System.out.println(task.toString());
+		}
+		startSimulation();
+	}
+	
+	private void startSimulation() {
+		frame.prepareForSimulation();
+		this.run();
+//		Thread th = new Thread(sim);
+//		th.run();
+	}
+}

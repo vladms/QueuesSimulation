@@ -1,0 +1,84 @@
+package testQueues;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import model.Task;
+
+public class Server implements Runnable {
+	private int ID;
+	private boolean used = false;
+	BlockingQueue<Task> bq;
+	private AtomicInteger waitingTime;
+
+	public Server(int ID) {
+		this.ID = ID;
+		bq = new LinkedBlockingQueue<Task>();
+		waitingTime = new AtomicInteger(0);
+	}
+
+	public void run() {
+		while (true) {
+			Task t;
+			try {
+				t = bq.take();
+				Thread.sleep(t.getProcessTime() * 1000);
+				waitingTime.addAndGet(t.getProcessTime() * (-1));
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	public void addTask(Task task) {
+		bq.add(task);
+		waitingTime.addAndGet(task.getProcessTime());
+	}
+
+	public Task[] getTasks() {
+		System.err.println("bq size: " + bq.size() + "\n");
+		Task[] tasks = new Task[bq.size()];
+		bq.toArray(tasks);
+		return tasks;
+	}
+
+	public int getID() {
+		return ID;
+	}
+
+	public void setID(int iD) {
+		ID = iD;
+	}
+
+	public boolean isUsed() {
+		return used;
+	}
+
+	public void setUsed(boolean used) {
+		this.used = used;
+	}
+
+	public int getProcessingTime() {
+		int time = 0;
+		for (Task task : bq) {
+			time += task.getProcessTime();
+		}
+		return time;
+	}
+
+	public void updateProcessingTime(int updateNumber) {
+		Task[] tasks;
+		tasks = this.getTasks();
+		if (tasks.length > 0) {
+			Task task = tasks[0];
+			task.setProcessTime(task.getProcessTime() - updateNumber);
+			if (task.getProcessTime() == 0) {
+				bq.poll();		
+				System.out.println("Client removed from queue \n");
+			}
+		}
+	}
+}

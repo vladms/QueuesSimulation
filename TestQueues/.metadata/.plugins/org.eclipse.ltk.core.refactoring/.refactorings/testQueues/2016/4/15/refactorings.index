@@ -1,0 +1,14 @@
+1459869119571	Encapsulate field 'arrivalTime'
+1459869123324	Encapsulate field 'procentTime'
+1459869308854	Delete element
+1459870741687	Change method 'Task'
+1459870767137	Encapsulate field 'processTime'
+1460021332305	Move compilation unit
+1460021565194	Rename type 'ClientGenerator'
+1460022246845	Encapsulate field 'ID'
+1460022462129	Encapsulate field 'ID'
+1460023071015	Rename field 'nrOfClients'
+1460023177238	Rename local variable 'nrOfClients'
+1460023199046	Rename method 'getClientsWithRestrictions'
+1460026878614	Encapsulate field 'used'
+1460104888946	Rename method 'addTAsk'

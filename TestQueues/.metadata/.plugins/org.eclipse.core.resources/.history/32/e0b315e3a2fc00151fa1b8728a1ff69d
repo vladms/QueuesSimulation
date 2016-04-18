@@ -1,0 +1,10 @@
+package gui;
+
+public class AppInterfaceButtonEvents {
+
+}
+package gui;
+
+public interface AppInterfaceButtonEvents {
+	 public void buttonTouched(String minArrivingTime, String maxArrivingTime, String minServiceTime, String maxServiceTime, String nrOfQueues, String nrOfClients, String simulationInterval);
+}

@@ -1,0 +1,71 @@
+package testQueues;
+
+import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import model.Task;
+
+public class Scheduler {
+	
+	 public static final int MAX_WAITING_TIME = 1000;
+
+	private BlockingQueue<Server> serversList;
+	private int numberOfServers;
+	private int numberOfWorkingServers;
+	
+	public Scheduler(int numberOfServers){
+		this.numberOfServers = numberOfServers;
+		numberOfWorkingServers = 0;
+		serversList = new LinkedBlockingQueue<Server>();
+		for (int index = 0; index < numberOfServers; ++index){
+			Server server = new Server(index);
+			serversList.add(server);
+			Thread th = new Thread(server);
+			th.start();
+		}
+	}
+	
+	boolean dispatchTaskOnServer(Task task){
+		boolean taskAddedToQueue = false;
+		int index;
+		Server[] servers = new Server[bq.size()];
+		bq.toArray(tasks);
+		Server[] servers = serversList.toArray();
+		for (index = 0;index < numberOfServers && taskAddedToQueue == false;++index){
+			Server server = serversList.peek();
+			System.out.println("Server tasks length:" + server.getTasks().length +"Server processing time: "+ server.getProcessingTime() + " task process time: " + task.getProcessTime() + "\n");
+			if (server.getProcessingTime() + task.getProcessTime() <= MAX_WAITING_TIME){
+				System.out.println("Task: " + task.toString() + " on server index: " + index);
+				taskAddedToQueue = true;
+				server.setUsed(true);
+				server.addTask(task);
+				numberOfWorkingServers++;
+			}
+		}
+		System.out.println("Addedd? " + taskAddedToQueue);
+
+		return taskAddedToQueue;
+	}
+	
+	public void updateServers(int updateNumber){
+		int index;
+		for (index = 0; index < numberOfWorkingServers;++index){
+			Server server = serversList.get(index);
+			server.updateProcessingTime(updateNumber);
+		}
+	}
+	public Task[] getTasks(int index){
+		Task[] tasks = serversList.get(index).getTasks();
+		return tasks;
+	}
+	public Task[][] getTasks(){
+		Task[][] tasks = new Task[numberOfServers][];
+		for (int index = 0; index < numberOfServers;index++){
+			Server server = serversList.get(index);
+			Task[] tasksFromServer = server.getTasks();
+			tasks[index] = tasksFromServer;
+		}
+		return tasks;
+	}
+}

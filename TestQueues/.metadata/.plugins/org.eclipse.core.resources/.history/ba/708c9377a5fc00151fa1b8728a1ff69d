@@ -1,0 +1,29 @@
+package utils;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import model.Task;
+
+public class TaskGenerator {
+	public ArrayList<Task> getClientsWithRestrictions(int minArrivingTime, int maxArrivingTime, int minServiceTime,
+			int maxServiceTime, int simulationInterval, int numberOfClients) {
+		ArrayList<Task> tasksArray = new ArrayList<Task>();
+		int currentTime = 0;
+		int clientIndex;
+		for (clientIndex = 0; clientIndex < numberOfClients; ++clientIndex){
+			Task client = new Task();
+			client.setID(clientIndex);
+			Random random = new Random();
+			int time = random.nextInt(maxArrivingTime - minArrivingTime + 1);
+
+//			System.out.println("time==" + time + " " + maxArrivingTime + " " + minArrivingTime);
+			currentTime+=time;
+			client.setArrivalTime(currentTime);
+			time = random.nextInt(maxServiceTime - minServiceTime + 1);
+			client.setServTime(time);
+			tasksArray.add(client);
+		}
+		return tasksArray;
+	}
+}
