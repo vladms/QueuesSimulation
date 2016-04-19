@@ -107,16 +107,16 @@ public class MainFrame extends JFrame implements ActionListener {
 
 		simulationIntervalTextField.setText("simulationInterval");
 
-		minArrivingTimeTextField.setText("1");
-		maxArrivingTimeTextField.setText("10");
-
-		minServiceTimeTextField.setText("3");
-		maxServiceTimeTextField.setText("30");
-
-		numberOfQueuesTextField.setText("5");
-		numberOfClientsTextField.setText("10");
-
-		simulationIntervalTextField.setText("100");
+//		minArrivingTimeTextField.setText("1");
+//		maxArrivingTimeTextField.setText("10");
+//
+//		minServiceTimeTextField.setText("3");
+//		maxServiceTimeTextField.setText("30");
+//
+//		numberOfQueuesTextField.setText("5");
+//		numberOfClientsTextField.setText("10");
+//
+//		simulationIntervalTextField.setText("100");
 
 		inputPanel.add(minArrivingTimeTextField);
 		inputPanel.add(maxArrivingTimeTextField);
